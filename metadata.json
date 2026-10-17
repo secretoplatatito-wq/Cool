@@ -1,0 +1,6 @@
+{
+  "name": "God's Eye",
+  "description": "Tactical Geospatial & Public Intelligence Observatory",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

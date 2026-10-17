@@ -1,0 +1,70 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Entity validation helper for ObservedTarget
+    function isValidTarget(data) {
+      return data.userId is string && data.userId.size() <= 128 &&
+             data.username is string && data.username.size() >= 1 && data.username.size() <= 100 &&
+             data.platform in ['YOUTUBE', 'TIKTOK', 'ROBLOX', 'TWITCH', 'KICK', 'GITHUB'] &&
+             data.displayName is string && data.displayName.size() <= 100 &&
+             data.followerCount is int && data.followerCount >= 0 &&
+             data.metricLabel is string && data.metricLabel.size() <= 50 &&
+             (!('avatarUrl' in data) || data.avatarUrl == null || (data.avatarUrl is string && data.avatarUrl.size() <= 1000)) &&
+             (!('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 2000)) &&
+             (!('status' in data) || data.status == null || (data.status is string && data.status.size() <= 50)) &&
+             (!('notes' in data) || data.notes == null || (data.notes is string && data.notes.size() <= 5000)) &&
+             (!('tags' in data) || (data.tags is list && data.tags.size() <= 20 && (data.tags.size() == 0 || data.tags[0] is string))) &&
+             (!('updatedAt' in data) || data.updatedAt == null || (data.updatedAt is timestamp && data.updatedAt <= request.time));
+    }
+
+    // Scoped user targets collection
+    match /users/{userId} {
+      allow get: if isSignedIn() && request.auth.uid == userId;
+
+      match /targets/{targetId} {
+        allow get, list: if isSignedIn() && request.auth.uid == userId;
+
+        allow create: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         isValidId(targetId) &&
+                         incoming().userId == request.auth.uid &&
+                         incoming().keys().hasAll(['userId', 'username', 'platform', 'displayName', 'followerCount', 'metricLabel', 'createdAt']) &&
+                         incoming().keys().hasOnly(['userId', 'username', 'platform', 'displayName', 'avatarUrl', 'bio', 'followerCount', 'metricLabel', 'status', 'notes', 'tags', 'createdAt', 'updatedAt']) &&
+                         incoming().createdAt is timestamp &&
+                         incoming().createdAt <= request.time &&
+                         isValidTarget(incoming());
+
+        allow update: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidTarget(incoming()) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'avatarUrl', 'bio', 'followerCount', 'metricLabel', 'status', 'notes', 'tags', 'updatedAt']);
+
+        allow delete: if isSignedIn() && request.auth.uid == userId;
+      }
+    }
+  }
+}

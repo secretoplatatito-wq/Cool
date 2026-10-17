@@ -1,0 +1,73 @@
+{
+  "entities": {
+    "Target": {
+      "title": "Target",
+      "description": "A public creator or entity monitored by the user",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "User ID of the owner"
+        },
+        "username": {
+          "type": "string",
+          "description": "Account handle or username"
+        },
+        "platform": {
+          "type": "string",
+          "description": "Social or developer platform",
+          "enum": ["YOUTUBE", "TIKTOK", "ROBLOX", "TWITCH", "KICK", "GITHUB"]
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name of the target"
+        },
+        "avatarUrl": {
+          "type": "string",
+          "description": "Public avatar image URL"
+        },
+        "bio": {
+          "type": "string",
+          "description": "Public account description or bio"
+        },
+        "followerCount": {
+          "type": "integer",
+          "description": "Total follower, subscriber, or star count"
+        },
+        "metricLabel": {
+          "type": "string",
+          "description": "Label for primary metric (e.g., Subscribers, Followers, Stars)"
+        },
+        "status": {
+          "type": "string",
+          "description": "Monitoring status tag"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Personal observation dossier notes"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Categorization tags"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of target creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last update"
+        }
+      },
+      "required": ["userId", "username", "platform", "displayName", "followerCount", "metricLabel", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/targets/{targetId}": {
+      "schema": "Target",
+      "description": "Collection of public targets monitored by an authenticated user"
+    }
+  }
+}
