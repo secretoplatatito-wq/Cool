@@ -158,7 +158,7 @@ fun ObservatoryHeader(
           letterSpacing = 1.sp
         )
         Text(
-          text = "SEC-LEVEL 4 // SATELLITE TELEMETRY ONLINE",
+          text = "SEC-LEVEL 4 // vE_0.0.1 [HARDENED] // TELEMETRY ONLINE",
           style = MaterialTheme.typography.labelSmall,
           color = TacticalCyan,
           fontSize = 9.sp
