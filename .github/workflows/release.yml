@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Tag for release (e.g., vE_0.0.1)'
+        required: true
+        default: 'vE_0.0.1'
 
 permissions:
   contents: write
@@ -51,15 +56,17 @@ jobs:
             echo "Error: No APK found!"
             exit 1
           fi
+          TAG_NAME="${{ github.event.inputs.release_tag || github.ref_name }}"
           echo "Found APK at: $APK_PATH"
-          cp "$APK_PATH" gods-eye-observatory-${{ github.ref_name }}.apk
-          echo "apk_path=gods-eye-observatory-${{ github.ref_name }}.apk" >> $GITHUB_OUTPUT
+          cp "$APK_PATH" "gods-eye-observatory-${TAG_NAME}.apk"
+          echo "apk_path=gods-eye-observatory-${TAG_NAME}.apk" >> $GITHUB_OUTPUT
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release & Upload Asset
         uses: softprops/action-gh-release@v2
         with:
-          name: "God's Eye Observatory Release ${{ github.ref_name }}"
-          tag_name: ${{ github.ref_name }}
+          name: "God's Eye Observatory Release ${{ steps.apk-location.outputs.tag_name }}"
+          tag_name: ${{ steps.apk-location.outputs.tag_name }}
           draft: false
           prerelease: false
           generate_release_notes: true
