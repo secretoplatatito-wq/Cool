@@ -5,36 +5,65 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val ObservatoryDarkColorScheme = darkColorScheme(
+val ObservatoryColorScheme = darkColorScheme(
   primary = AmberPrimary,
-  onPrimary = ObsidianBlack,
+  onPrimary = ObservatoryVoid,
   primaryContainer = AmberContainer,
   onPrimaryContainer = OnAmberContainer,
+  inversePrimary = AmberDark,
+
   secondary = TacticalCyan,
-  onSecondary = ObsidianBlack,
-  secondaryContainer = Color(0xFF00363D),
-  onSecondaryContainer = Color(0xFF80F1FF),
+  onSecondary = ObservatoryVoid,
+  secondaryContainer = TacticalCyanContainer,
+  onSecondaryContainer = OnTacticalCyanContainer,
+
   tertiary = PhosphorGreen,
-  onTertiary = ObsidianBlack,
-  background = ObsidianBlack,
+  onTertiary = ObservatoryVoid,
+  tertiaryContainer = PhosphorGreenContainer,
+  onTertiaryContainer = OnPhosphorGreenContainer,
+
+  background = ObservatoryVoid,
   onBackground = TextPrimary,
-  surface = ObsidianSurface,
+
+  surface = ObservatorySurface,
   onSurface = TextPrimary,
-  surfaceVariant = ObsidianElevated,
+  surfaceVariant = ObservatorySurfaceVariant,
   onSurfaceVariant = TextSecondary,
+  surfaceTint = AmberPrimary,
+  inverseSurface = TextPrimary,
+  inverseOnSurface = ObservatoryVoid,
+
+  error = CrimsonAlert,
+  onError = ObservatoryVoid,
+  errorContainer = CrimsonAlertContainer,
+  onErrorContainer = OnCrimsonAlertContainer,
+
   outline = BorderAmber,
   outlineVariant = BorderSubtle,
-  error = CrimsonAlert,
-  onError = ObsidianBlack
+  scrim = Color(0xCC000000),
+
+  surfaceContainerLowest = ObservatoryVoid,
+  surfaceContainerLow = ObservatorySurface,
+  surfaceContainer = ObservatorySurfaceContainer,
+  surfaceContainerHigh = ObservatorySurfaceContainerHigh,
+  surfaceContainerHighest = ObservatorySurfaceContainerHighest
 )
 
 @Composable
-fun MyApplicationTheme(
-  content: @Composable () -> Unit,
+fun ObservatoryTheme(
+  content: @Composable () -> Unit
 ) {
   MaterialTheme(
-    colorScheme = ObservatoryDarkColorScheme,
+    colorScheme = ObservatoryColorScheme,
     typography = Typography,
+    shapes = ObservatoryShapes,
     content = content
   )
+}
+
+@Composable
+fun MyApplicationTheme(
+  content: @Composable () -> Unit
+) {
+  ObservatoryTheme(content = content)
 }
