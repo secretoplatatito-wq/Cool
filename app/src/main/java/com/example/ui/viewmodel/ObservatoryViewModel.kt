@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 enum class ReconDestination {
+  DASHBOARD,
   ORBITAL_GLOBE,
   PUBLIC_RECON,
   DOSSIER_WATCHLIST,
@@ -46,7 +47,7 @@ class ObservatoryViewModel(application: Application) : AndroidViewModel(applicat
   val currentUserId: String?
     get() = Firebase.auth.currentUser?.uid
 
-  private val _activeDestination = MutableStateFlow(ReconDestination.ORBITAL_GLOBE)
+  private val _activeDestination = MutableStateFlow(ReconDestination.DASHBOARD)
   val activeDestination: StateFlow<ReconDestination> = _activeDestination.asStateFlow()
 
   fun setDestination(dest: ReconDestination) {

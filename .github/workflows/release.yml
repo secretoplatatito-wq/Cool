@@ -33,20 +33,27 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.13'
 
       - name: Prepare Secrets & Keystore
         run: |
           if [ -f debug.keystore.base64 ]; then
             base64 -d debug.keystore.base64 > debug.keystore
+            mkdir -p app
+            cp debug.keystore app/debug.keystore
           fi
           touch .env
-          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+          KEY="${{ secrets.GEMINI_API_KEY }}"
+          if [ -z "$KEY" ]; then
+            KEY="MY_GEMINI_API_KEY"
+          fi
+          echo "GEMINI_API_KEY=$KEY" > .env
+
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x gradlew
 
       - name: Build Android APK
         run: |
-          gradle :app:assembleDebug --stacktrace
+          ./gradlew :app:assembleDebug --stacktrace
 
       - name: Locate Built APK
         id: apk-location

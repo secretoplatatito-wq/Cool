@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.FolderSpecial
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Public
@@ -92,6 +93,13 @@ fun MainObservatoryScreen(
       // Main Destination View
       Box(modifier = Modifier.weight(1f)) {
         when (currentDestination) {
+          ReconDestination.DASHBOARD -> {
+            ObservatoryDashboard(
+              viewModel = viewModel,
+              onNavigate = { viewModel.setDestination(it) }
+            )
+          }
+
           ReconDestination.ORBITAL_GLOBE -> {
             Globe3DCanvas(
               modifier = Modifier.fillMaxSize(),
@@ -191,6 +199,32 @@ fun ObservatoryBottomBar(
       .navigationBarsPadding()
       .border(1.dp, BorderAmber)
   ) {
+    NavigationBarItem(
+      selected = currentDestination == ReconDestination.DASHBOARD,
+      onClick = { onNavigate(ReconDestination.DASHBOARD) },
+      icon = {
+        Icon(
+          imageVector = Icons.Default.Dashboard,
+          contentDescription = "Dashboard"
+        )
+      },
+      label = {
+        Text(
+          text = "HUB",
+          fontFamily = FontFamily.Monospace,
+          fontSize = 10.sp
+        )
+      },
+      colors = NavigationBarItemDefaults.colors(
+        selectedIconColor = ObsidianBlack,
+        selectedTextColor = AmberPrimary,
+        indicatorColor = AmberPrimary,
+        unselectedIconColor = TextSecondary,
+        unselectedTextColor = TextSecondary
+      ),
+      modifier = Modifier.testTag("nav_dashboard")
+    )
+
     NavigationBarItem(
       selected = currentDestination == ReconDestination.ORBITAL_GLOBE,
       onClick = { onNavigate(ReconDestination.ORBITAL_GLOBE) },
