@@ -1,7 +1,5 @@
-<!-- Centered logo with a custom width -->
-<p align="center">
-  <img src="images/logo.png" alt="Project Logo" width="200">
-</p>
+![Logo](images/logo.png)
+
 
 
 
