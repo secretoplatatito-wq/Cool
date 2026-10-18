@@ -25,17 +25,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Java JDK
+      - name: Set up Java JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | sdkmanager --licenses 2>/dev/null || true
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Prepare Secrets & Keystore
+      - name: Prepare Keystore & Environment Secrets
         run: |
+          # 1. Ensure valid debug.keystore exists in root and app directories
           if [ -f debug.keystore.base64 ]; then
             base64 -d debug.keystore.base64 > debug.keystore 2>/dev/null || true
           fi
@@ -44,26 +52,29 @@ jobs:
           fi
           mkdir -p app
           cp debug.keystore app/debug.keystore 2>/dev/null || true
-          touch .env
+
+          # 2. Ensure .env and .env.example exist for Secrets Gradle Plugin
+          touch .env .env.example
           KEY="${{ secrets.GEMINI_API_KEY }}"
           if [ -z "$KEY" ]; then
             KEY="MY_GEMINI_API_KEY"
           fi
           echo "GEMINI_API_KEY=$KEY" > .env
+          echo "GEMINI_API_KEY=$KEY" > .env.example
 
       - name: Grant Execute Permission for Gradlew
         run: chmod +x gradlew
 
-      - name: Build Android APK
+      - name: Build Android APK with Gradlew
         run: |
-          ./gradlew :app:assembleDebug --no-daemon --stacktrace
+          ./gradlew :app:assembleDebug --no-daemon --no-configuration-cache --stacktrace
 
-      - name: Locate Built APK
+      - name: Locate Built APK Asset
         id: apk-location
         run: |
           APK_PATH=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
           if [ -z "$APK_PATH" ]; then
-            echo "Error: No APK found!"
+            echo "Error: No APK found after build!"
             exit 1
           fi
           TAG_NAME="${{ github.event.inputs.release_tag || github.ref_name }}"
@@ -72,7 +83,7 @@ jobs:
           echo "apk_path=gods-eye-observatory-${TAG_NAME}.apk" >> $GITHUB_OUTPUT
           echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
 
-      - name: Create GitHub Release & Upload Asset
+      - name: Create GitHub Release & Publish APK
         uses: softprops/action-gh-release@v2
         with:
           name: "God's Eye Observatory Release ${{ steps.apk-location.outputs.tag_name }}"
