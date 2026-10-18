@@ -1,4 +1,5 @@
-![Logo](images/logo.png)
+![God's Eye Observatory Banner](Images/logo.png)
+
 
 
 
