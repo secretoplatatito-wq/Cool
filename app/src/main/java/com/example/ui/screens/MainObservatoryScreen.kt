@@ -39,7 +39,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import com.example.ui.theme.TacticalHaptics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -153,6 +155,8 @@ fun ObservatoryBottomBar(
   currentDestination: ReconDestination,
   onNavigate: (ReconDestination) -> Unit
 ) {
+  val haptic = LocalHapticFeedback.current
+
   NavigationBar(
     containerColor = ObsidianCard,
     contentColor = AmberPrimary,
@@ -162,7 +166,10 @@ fun ObservatoryBottomBar(
   ) {
     NavigationBarItem(
       selected = currentDestination == ReconDestination.DASHBOARD,
-      onClick = { onNavigate(ReconDestination.DASHBOARD) },
+      onClick = {
+        TacticalHaptics.tick(haptic)
+        onNavigate(ReconDestination.DASHBOARD)
+      },
       icon = {
         Icon(
           imageVector = Icons.Default.Dashboard,
@@ -188,7 +195,10 @@ fun ObservatoryBottomBar(
 
     NavigationBarItem(
       selected = currentDestination == ReconDestination.ORBITAL_GLOBE,
-      onClick = { onNavigate(ReconDestination.ORBITAL_GLOBE) },
+      onClick = {
+        TacticalHaptics.tick(haptic)
+        onNavigate(ReconDestination.ORBITAL_GLOBE)
+      },
       icon = {
         Icon(
           imageVector = Icons.Default.Public,
@@ -214,7 +224,10 @@ fun ObservatoryBottomBar(
 
     NavigationBarItem(
       selected = currentDestination == ReconDestination.PUBLIC_RECON,
-      onClick = { onNavigate(ReconDestination.PUBLIC_RECON) },
+      onClick = {
+        TacticalHaptics.tick(haptic)
+        onNavigate(ReconDestination.PUBLIC_RECON)
+      },
       icon = {
         Icon(
           imageVector = Icons.Default.Radar,
@@ -240,7 +253,10 @@ fun ObservatoryBottomBar(
 
     NavigationBarItem(
       selected = currentDestination == ReconDestination.DOSSIER_WATCHLIST,
-      onClick = { onNavigate(ReconDestination.DOSSIER_WATCHLIST) },
+      onClick = {
+        TacticalHaptics.tick(haptic)
+        onNavigate(ReconDestination.DOSSIER_WATCHLIST)
+      },
       icon = {
         Icon(
           imageVector = Icons.Default.FolderSpecial,
@@ -266,7 +282,10 @@ fun ObservatoryBottomBar(
 
     NavigationBarItem(
       selected = currentDestination == ReconDestination.ANALYST_AI,
-      onClick = { onNavigate(ReconDestination.ANALYST_AI) },
+      onClick = {
+        TacticalHaptics.tick(haptic)
+        onNavigate(ReconDestination.ANALYST_AI)
+      },
       icon = {
         Icon(
           imageVector = Icons.Default.Psychology,

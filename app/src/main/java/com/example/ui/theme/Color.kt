@@ -2,46 +2,75 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Observatory Cosmic Dark Foundation (High Contrast)
-val ObservatoryVoid = Color(0xFF06090E)           // Ultra-deep space black
-val ObservatorySurface = Color(0xFF0B1017)        // Dark station hull
-val ObservatorySurfaceVariant = Color(0xFF121924) // Elevated tactical panel
-val ObservatorySurfaceContainer = Color(0xFF17202D) // Card / module background
-val ObservatorySurfaceContainerHigh = Color(0xFF1D293A) // Highlighted panel
-val ObservatorySurfaceContainerHighest = Color(0xFF243348)
+// Unseen.co Signature Palette: Deep Velvet Espresso, Creamy Ivory, Champagne Gold
 
-// Vibrant Amber Spectrum (Observatory Primary Accent)
-val AmberPrimary = Color(0xFFFFB300)             // Core luminous amber #FFB300
-val AmberLight = Color(0xFFFFD54F)               // High-intensity phosphor gold #FFD54F
-val AmberDark = Color(0xFFFF8F00)                // Deep warning amber #FF8F00
-val AmberContainer = Color(0xFF382600)           // Dark warm amber container
-val OnAmberContainer = Color(0xFFFFE082)         // Bright amber text on container
-val AmberGlow = Color(0x66FFB300)                // Holographic amber glow
-val AmberHighlight = Color(0xFFFFE57F)           // Intense laser point
+// Deep Roasted Coffee & Espresso Foundations
+val EspressoVoid = Color(0xFF140F0D)           // Velvet roasted coffee-black
+val CoffeeSurface = Color(0xFF1C1613)          // Warm dark espresso surface
+val CoffeeSurfaceVariant = Color(0xFF261E1A)   // Elevated rich mocha panel
+val CoffeeCard = Color(0xFF2E2420)             // Tactile dark coffee card container
+val CoffeeElevated = Color(0xFF382D28)         // Elevated container high
+val CoffeeHighlight = Color(0xFF453832)        // Highest container tier
 
-// Tactical Secondary & Sensor Telemetry
-val TacticalCyan = Color(0xFF00E5FF)             // Radar / coordinate cyan #00E5FF
-val TacticalCyanContainer = Color(0xFF003840)
-val OnTacticalCyanContainer = Color(0xFF80F4FF)
-val PhosphorGreen = Color(0xFF00E676)            // Satellite lock / active status
-val PhosphorGreenContainer = Color(0xFF00381B)
-val OnPhosphorGreenContainer = Color(0xFF80FFBA)
-val CrimsonAlert = Color(0xFFFF1744)             // Alert / danger red
-val CrimsonAlertContainer = Color(0xFF40000C)
-val OnCrimsonAlertContainer = Color(0xFFFF8A9E)
+// Creamy Ivory & Warm Soft Whites (High-contrast typography)
+val CreamIvory = Color(0xFFFBF8F3)             // Luminous warm creamy ivory
+val LinenWhite = Color(0xFFEDE6DC)             // Soft linen off-white
+val ParchmentMuted = Color(0xFFA89E94)         // Warm neutral taupe metadata
+val ParchmentDim = Color(0xFF73675F)           // Muted coordinate stone
 
-// Typography & Content Contrast
-val TextPrimary = Color(0xFFF6F8FB)              // Pure crisp white text
-val TextSecondary = Color(0xFFB0BEC5)            // Cool telemetry silver
-val TextMuted = Color(0xFF6A7B8C)                // Muted coordinate text
+// Champagne & Celestial Gold (Restrained luxury flourishes)
+val ChampagneGold = Color(0xFFD4AF37)          // Metallic champagne gold
+val GoldLight = Color(0xFFE8C868)              // Luminous celestial sparkle
+val GoldDark = Color(0xFFAA8220)               // Deep warm bronze-gold
+val GoldContainer = Color(0xFF3A2E10)          // Rich warm gold container
+val OnGoldContainer = Color(0xFFFBE49D)        // Bright gold text on container
+val StarGlow = Color(0x44D4AF37)               // Delicate star flourish glow
 
-// Reticles & Borders
-val BorderAmber = Color(0x44FFB300)              // Translucent amber HUD line
-val BorderAmberStrong = Color(0x88FFB300)        // Focused target border
-val BorderSubtle = Color(0x22FFFFFF)             // Grid boundary line
+// Subtle Secondary Sensory & Sensor Telemetry
+val SensorCyan = Color(0xFF7CE4EC)             // Refined celestial ice cyan
+val StatusSage = Color(0xFF86B088)             // Organic quiet status sage
+val AlertCrimson = Color(0xFFD9534F)           // Subdued alert crimson
 
-// Backward-compatible aliases for existing screen references
-val ObsidianBlack = ObservatoryVoid
-val ObsidianSurface = ObservatorySurface
-val ObsidianElevated = ObservatorySurfaceVariant
-val ObsidianCard = ObservatorySurfaceContainer
+val TacticalCyanContainer = Color(0xFF162E32)
+val OnTacticalCyanContainer = Color(0xFFA6F3F9)
+val PhosphorGreenContainer = Color(0xFF1E2F20)
+val OnPhosphorGreenContainer = Color(0xFFBCE3BE)
+val CrimsonAlertContainer = Color(0xFF381514)
+val OnCrimsonAlertContainer = Color(0xFFF9A8A5)
+
+// Hair-Thin & Fine Borders (Unseen minimal detail)
+val BorderGold = Color(0x38D4AF37)             // Fine hairline gold stroke
+val BorderGoldStrong = Color(0x75D4AF37)       // Focused gold border
+val BorderLinen = Color(0x15FFFFFF)            // Delicate whisper border
+
+// Backward-compatible semantic bindings
+val ObservatoryVoid = EspressoVoid
+val ObservatorySurface = CoffeeSurface
+val ObservatorySurfaceVariant = CoffeeSurfaceVariant
+val ObservatorySurfaceContainer = CoffeeCard
+val ObservatorySurfaceContainerHigh = CoffeeElevated
+val ObservatorySurfaceContainerHighest = CoffeeHighlight
+
+val AmberPrimary = ChampagneGold
+val AmberLight = GoldLight
+val AmberDark = GoldDark
+val AmberContainer = GoldContainer
+val OnAmberContainer = OnGoldContainer
+val AmberGlow = StarGlow
+
+val TacticalCyan = SensorCyan
+val PhosphorGreen = StatusSage
+val CrimsonAlert = AlertCrimson
+
+val TextPrimary = CreamIvory
+val TextSecondary = LinenWhite
+val TextMuted = ParchmentMuted
+
+val BorderAmber = BorderGold
+val BorderAmberStrong = BorderGoldStrong
+val BorderSubtle = BorderLinen
+
+val ObsidianBlack = EspressoVoid
+val ObsidianSurface = CoffeeSurface
+val ObsidianElevated = CoffeeSurfaceVariant
+val ObsidianCard = CoffeeCard

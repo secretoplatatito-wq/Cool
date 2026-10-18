@@ -52,7 +52,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import com.example.ui.theme.TacticalHaptics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -375,6 +377,7 @@ fun TargetResultCard(
   onAddToWatchlist: () -> Unit,
   onAskAnalyst: () -> Unit
 ) {
+  val haptic = LocalHapticFeedback.current
   val formattedCount = remember(target.followerCount) {
     NumberFormat.getNumberInstance(Locale.US).format(target.followerCount)
   }
@@ -536,7 +539,10 @@ fun TargetResultCard(
           horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
           Button(
-            onClick = onAddToWatchlist,
+            onClick = {
+              TacticalHaptics.lock(haptic)
+              onAddToWatchlist()
+            },
             colors = ButtonDefaults.buttonColors(
               containerColor = AmberPrimary,
               contentColor = ObsidianBlack
@@ -561,7 +567,10 @@ fun TargetResultCard(
           }
 
           Button(
-            onClick = onAskAnalyst,
+            onClick = {
+              TacticalHaptics.click(haptic)
+              onAskAnalyst()
+            },
             colors = ButtonDefaults.buttonColors(
               containerColor = Color(0xFF1E2838),
               contentColor = TacticalCyan
