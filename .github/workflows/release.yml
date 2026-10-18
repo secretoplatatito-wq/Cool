@@ -1,105 +1,102 @@
-name: Build & Publish Release APK
+name: Build Android APK & Deploy GitHub Pages
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+      - master
   workflow_dispatch:
-    inputs:
-      release_tag:
-        description: 'Tag for release (e.g., vE_0.0.1)'
-        required: true
-        default: 'vE_0.0.1'
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  build-and-release:
-    name: Build APK and Create GitHub Release
+  build:
+    name: Compile Gradle to APK
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Set up Java JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Accept Android SDK Licenses
-        run: |
-          mkdir -p "$ANDROID_HOME/licenses" || true
-          printf "\n24333f8a63b6825ea9c5514f83c2829b004d1fee\nd56f5187479451eabf01fb78af6dfcb131a6481e\n84831b9409646a2a3e04447a3249e6b40478dc92\n" >> "$ANDROID_HOME/licenses/android-sdk-license"
-          printf "\n859f31038342e3973ece4091922822925ada60ff\n" >> "$ANDROID_HOME/licenses/android-sdk-preview-license"
-          printf "\nd9754651136ca4c505e991476baeed2a194b4944\n" >> "$ANDROID_HOME/licenses/intel-android-extra-license"
-          if command -v sdkmanager >/dev/null 2>&1; then
-            yes | sdkmanager --licenses 2>/dev/null || true
-          elif [ -f "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
-            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses 2>/dev/null || true
-          fi
+          java-version: '17'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Prepare Keystore & Environment Secrets
+      - name: Prepare Signing Key & Environment
         run: |
-          # 1. Ensure valid debug.keystore exists in root and app directories
+          # Ensure .env exists for the secrets-gradle-plugin
+          if [ ! -f .env ]; then
+            cp .env.example .env
+          fi
+
+          # Decode the debug keystore
           if [ -f debug.keystore.base64 ]; then
-            base64 -d debug.keystore.base64 > debug.keystore 2>/dev/null || true
+            base64 -d debug.keystore.base64 > debug.keystore
+          else
+            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           fi
-          if [ ! -f debug.keystore ] || [ ! -s debug.keystore ]; then
-            keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-          fi
-          mkdir -p app
-          cp debug.keystore app/debug.keystore 2>/dev/null || true
 
-          # 2. Ensure .env and .env.example exist for Secrets Gradle Plugin
-          touch .env .env.example
-          KEY="${{ secrets.GEMINI_API_KEY }}"
-          if [ -z "$KEY" ]; then
-            KEY="MY_GEMINI_API_KEY"
-          fi
-          echo "GEMINI_API_KEY=$KEY" > .env
-          echo "GEMINI_API_KEY=$KEY" > .env.example
+          chmod +x gradlew
 
-      - name: Grant Execute Permission for Gradlew
-        run: chmod +x gradlew
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
 
-      - name: Build Android APK with Gradlew
+      - name: Prepare Distribution Artifacts
         run: |
-          ./gradlew :app:assembleDebug --no-daemon --no-configuration-cache --stacktrace
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/SuperOSINT.apk
+          
+          # Prepare the static website bundle for GitHub Pages
+          mkdir -p _site
+          cp -r web/* _site/
+          cp dist/SuperOSINT.apk _site/SuperOSINT.apk
 
-      - name: Locate Built APK Asset
-        id: apk-location
-        run: |
-          APK_PATH=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
-          if [ -z "$APK_PATH" ]; then
-            echo "Error: No APK found after build!"
-            exit 1
-          fi
-          TAG_NAME="${{ github.event.inputs.release_tag || github.ref_name }}"
-          echo "Found APK at: $APK_PATH"
-          cp "$APK_PATH" "gods-eye-observatory-${TAG_NAME}.apk"
-          echo "apk_path=gods-eye-observatory-${TAG_NAME}.apk" >> $GITHUB_OUTPUT
-          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release & Publish APK
-        uses: softprops/action-gh-release@v2
+      - name: Upload APK Build Artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: "God's Eye Observatory Release ${{ steps.apk-location.outputs.tag_name }}"
-          tag_name: ${{ steps.apk-location.outputs.tag_name }}
-          target_commitish: ${{ github.sha }}
+          name: SuperOSINT-apk
+          path: dist/SuperOSINT.apk
+          if-no-files-found: error
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        with:
+          files: dist/SuperOSINT.apk
+          tag_name: latest
+          name: Super OSINT Latest APK Release
+          body: |
+            ### 🛡️ Super OSINT - Automatic Build
+            - Commit: `${{ github.sha }}`
+            - Direct Install APK: [SuperOSINT.apk](https://github.com/${{ github.repository }}/releases/download/latest/SuperOSINT.apk)
           draft: false
           prerelease: false
-          generate_release_notes: true
-          files: ${{ steps.apk-location.outputs.apk_path }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Upload GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+  deploy-pages:
+    name: Deploy to GitHub Pages (.github.io)
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
