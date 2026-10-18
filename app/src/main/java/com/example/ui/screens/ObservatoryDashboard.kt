@@ -1,16 +1,21 @@
 package com.example.ui.screens
 
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,9 +50,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -57,14 +65,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.R
-import com.example.ui.theme.AmberContainer
+import com.example.ui.components.ObservatoryHeader
 import com.example.ui.theme.AmberGlow
 import com.example.ui.theme.AmberLight
 import com.example.ui.theme.AmberPrimary
@@ -76,7 +82,6 @@ import com.example.ui.theme.ObservatorySurfaceContainer
 import com.example.ui.theme.ObservatorySurfaceContainerHigh
 import com.example.ui.theme.ObservatorySurfaceVariant
 import com.example.ui.theme.ObservatoryVoid
-import com.example.ui.theme.OnAmberContainer
 import com.example.ui.theme.PhosphorGreen
 import com.example.ui.theme.TacticalCyan
 import com.example.ui.theme.TextMuted
@@ -102,12 +107,13 @@ fun ObservatoryDashboard(
 
   val currentTime = SimpleDateFormat("HH:mm:ss 'UTC'", Locale.US).format(Date())
 
+  // Dynamic radar sweep animation
   val infiniteTransition = rememberInfiniteTransition(label = "RadarSweep")
   val sweepAngle by infiniteTransition.animateFloat(
     initialValue = 0f,
     targetValue = 360f,
     animationSpec = infiniteRepeatable(
-      animation = tween(3500, easing = LinearEasing),
+      animation = tween(3200, easing = LinearEasing),
       repeatMode = RepeatMode.Restart
     ),
     label = "SweepAngle"
@@ -123,98 +129,61 @@ fun ObservatoryDashboard(
     item {
       Spacer(modifier = Modifier.height(12.dp))
 
-      // Hero Command Status Banner
+      // Reusable Holographic Glassmorphic Header
+      ObservatoryHeader(
+        title = "God's Eye",
+        subtitle = "GLOBAL SURVEILLANCE & RECON // SEC-LVL 4",
+        statusLabel = "ONLINE",
+        statusColor = AmberPrimary,
+        showEmblem = true
+      )
+
+      Spacer(modifier = Modifier.height(14.dp))
+
+      // Luminous Sub-Bar with Real-time Clock & Sector Coordinates
       Surface(
-        color = ObservatorySurfaceContainer,
-        shape = RoundedCornerShape(12.dp),
-        border = androidx.compose.foundation.BorderStroke(1.5.dp, BorderAmberStrong),
+        color = ObservatorySurfaceContainer.copy(alpha = 0.7f),
+        shape = RoundedCornerShape(8.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, BorderSubtle),
         modifier = Modifier.fillMaxWidth()
       ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-          ) {
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
               modifier = Modifier
-                .size(52.dp)
-                .clip(CircleShape)
-                .background(AmberContainer)
-                .border(1.5.dp, AmberPrimary, CircleShape),
-              contentAlignment = Alignment.Center
-            ) {
-              Image(
-                painter = painterResource(id = R.drawable.ic_gods_eye_logo),
-                contentDescription = "God's Eye Logo",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-              )
-            }
-
-            Spacer(modifier = Modifier.width(14.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-              Text(
-                text = "GOD'S EYE OBSERVATORY",
-                style = MaterialTheme.typography.titleLarge,
-                color = AmberPrimary,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp
-              )
-              Text(
-                text = "GLOBAL SURVEILLANCE & RECONNAISSANCE",
-                style = MaterialTheme.typography.labelSmall,
-                color = TacticalCyan,
-                fontSize = 10.sp
-              )
-            }
-
-            Surface(
-              color = Color(0x2200E676),
-              shape = RoundedCornerShape(6.dp),
-              border = androidx.compose.foundation.BorderStroke(1.dp, PhosphorGreen)
-            ) {
-              Text(
-                text = "ONLINE",
-                style = MaterialTheme.typography.labelSmall,
-                color = PhosphorGreen,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-              )
-            }
-          }
-
-          Spacer(modifier = Modifier.height(14.dp))
-
-          // System telemetry line
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-          ) {
-            Text(
-              text = "SECTOR 7G // LEO-014 ORBIT",
-              style = MaterialTheme.typography.labelSmall,
-              color = TextSecondary,
-              fontSize = 10.sp,
-              fontFamily = FontFamily.Monospace
+                .size(6.dp)
+                .background(TacticalCyan, CircleShape)
             )
+            Spacer(modifier = Modifier.width(6.dp))
             Text(
-              text = currentTime,
+              text = "SECTOR 7G // LEO-014 SATELLITE",
               style = MaterialTheme.typography.labelSmall,
-              color = AmberLight,
+              color = TacticalCyan,
               fontSize = 10.sp,
               fontFamily = FontFamily.Monospace
             )
           }
+
+          Text(
+            text = currentTime,
+            style = MaterialTheme.typography.labelSmall,
+            color = AmberLight,
+            fontSize = 10.sp,
+            fontFamily = FontFamily.Monospace,
+            fontWeight = FontWeight.Bold
+          )
         }
       }
 
       Spacer(modifier = Modifier.height(16.dp))
 
-      // 4 Key Telemetry HUD Panels
+      // 4 Key Telemetry HUD Panels with Micro-Glow
       Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -223,7 +192,7 @@ fun ObservatoryDashboard(
           modifier = Modifier.weight(1f),
           title = "CLOUD DOSSIERS",
           value = "$targetCount",
-          unit = "TARGETS",
+          unit = "SAVED TARGETS",
           color = AmberPrimary,
           onClick = { onNavigate(ReconDestination.DOSSIER_WATCHLIST) }
         )
@@ -231,7 +200,7 @@ fun ObservatoryDashboard(
           modifier = Modifier.weight(1f),
           title = "GLOBAL NODES",
           value = "10",
-          unit = "ACTIVE",
+          unit = "ACTIVE STATIONS",
           color = TacticalCyan,
           onClick = { onNavigate(ReconDestination.ORBITAL_GLOBE) }
         )
@@ -245,7 +214,7 @@ fun ObservatoryDashboard(
       ) {
         TelemetryCard(
           modifier = Modifier.weight(1f),
-          title = "RECON PLATFORMS",
+          title = "RECON CHANNELS",
           value = "6",
           unit = "YT/RBX/GH/TT/TW/KC",
           color = AmberLight,
@@ -254,8 +223,8 @@ fun ObservatoryDashboard(
         TelemetryCard(
           modifier = Modifier.weight(1f),
           title = "AI INTEL LINK",
-          value = "READY",
-          unit = "GEMINI 3.8/4",
+          value = "ONLINE",
+          unit = "GEMINI 3.8 / 4.0",
           color = PhosphorGreen,
           onClick = { onNavigate(ReconDestination.ANALYST_AI) }
         )
@@ -263,12 +232,21 @@ fun ObservatoryDashboard(
 
       Spacer(modifier = Modifier.height(18.dp))
 
-      // Tactical Mini-Radar & Orbit Preview Card
+      // Tactical Mini-Radar & Orbit Preview Card with Glassmorphic Depth
       Surface(
         color = ObservatorySurfaceContainer,
-        shape = RoundedCornerShape(12.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, BorderAmber),
-        modifier = Modifier.fillMaxWidth()
+        shape = RoundedCornerShape(14.dp),
+        border = androidx.compose.foundation.BorderStroke(1.2.dp, BorderAmber),
+        modifier = Modifier
+          .fillMaxWidth()
+          .drawBehind {
+            drawCircle(
+              brush = Brush.radialGradient(
+                colors = listOf(AmberGlow.copy(alpha = 0.15f), Color.Transparent),
+                radius = size.width * 0.6f
+              )
+            )
+          }
       ) {
         Column(modifier = Modifier.padding(16.dp)) {
           Row(
@@ -289,14 +267,15 @@ fun ObservatoryDashboard(
                 style = MaterialTheme.typography.labelSmall,
                 color = AmberPrimary,
                 fontWeight = FontWeight.Bold,
-                fontSize = 11.sp
+                fontSize = 11.sp,
+                letterSpacing = 1.sp
               )
             }
             Text(
-              text = "ALT: 412 KM",
+              text = "ALT: 412 KM // SPEED 7.66 KM/S",
               style = MaterialTheme.typography.labelSmall,
               color = TacticalCyan,
-              fontSize = 10.sp,
+              fontSize = 9.sp,
               fontFamily = FontFamily.Monospace
             )
           }
@@ -307,45 +286,56 @@ fun ObservatoryDashboard(
           Box(
             modifier = Modifier
               .fillMaxWidth()
-              .height(140.dp)
-              .clip(RoundedCornerShape(8.dp))
-              .background(ObservatoryVoid),
+              .height(145.dp)
+              .clip(RoundedCornerShape(10.dp))
+              .background(ObservatoryVoid)
+              .border(1.dp, BorderSubtle, RoundedCornerShape(10.dp)),
             contentAlignment = Alignment.Center
           ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
               val cx = size.width / 2f
               val cy = size.height / 2f
-              val radius = minOf(cx, cy) * 0.85f
+              val radius = minOf(cx, cy) * 0.88f
+
+              // Ambient Radar Center Halo
+              drawCircle(
+                brush = Brush.radialGradient(
+                  colors = listOf(Color(0x33FFB300), Color(0x1100E5FF), Color.Transparent),
+                  radius = radius
+                ),
+                radius = radius,
+                center = Offset(cx, cy)
+              )
 
               // Radar grid rings
               drawCircle(
-                color = Color(0x33FFB300),
+                color = Color(0x44FFB300),
                 radius = radius,
                 center = Offset(cx, cy),
-                style = Stroke(width = 1f)
+                style = Stroke(width = 1.2f)
               )
               drawCircle(
-                color = Color(0x22FFB300),
+                color = Color(0x28FFB300),
                 radius = radius * 0.65f,
                 center = Offset(cx, cy),
                 style = Stroke(width = 0.8f, pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 6f), 0f))
               )
               drawCircle(
-                color = Color(0x2200E5FF),
+                color = Color(0x2800E5FF),
                 radius = radius * 0.35f,
                 center = Offset(cx, cy),
                 style = Stroke(width = 0.8f)
               )
 
-              // Crosshairs
+              // Reticle Crosshairs
               drawLine(
-                color = Color(0x22FFB300),
+                color = Color(0x33FFB300),
                 start = Offset(cx - radius, cy),
                 end = Offset(cx + radius, cy),
                 strokeWidth = 1f
               )
               drawLine(
-                color = Color(0x22FFB300),
+                color = Color(0x33FFB300),
                 start = Offset(cx, cy - radius),
                 end = Offset(cx, cy + radius),
                 strokeWidth = 1f
@@ -357,7 +347,7 @@ fun ObservatoryDashboard(
                   colors = listOf(
                     Color.Transparent,
                     Color(0x05FFB300),
-                    Color(0x33FFB300)
+                    Color(0x44FFB300)
                   ),
                   center = Offset(cx, cy)
                 ),
@@ -368,7 +358,7 @@ fun ObservatoryDashboard(
                 size = Size(radius * 2, radius * 2)
               )
 
-              // Static observation blips
+              // Observation blips
               val blips = listOf(
                 Offset(cx + radius * 0.45f, cy - radius * 0.35f),
                 Offset(cx - radius * 0.5f, cy + radius * 0.2f),
@@ -377,8 +367,8 @@ fun ObservatoryDashboard(
               )
 
               blips.forEach { blip ->
-                drawCircle(color = PhosphorGreen.copy(alpha = 0.5f), radius = 5f, center = blip, style = Stroke(1f))
-                drawCircle(color = PhosphorGreen, radius = 2.5f, center = blip)
+                drawCircle(color = PhosphorGreen.copy(alpha = 0.5f), radius = 6f, center = blip, style = Stroke(1.2f))
+                drawCircle(color = PhosphorGreen, radius = 3f, center = blip)
               }
             }
 
@@ -386,11 +376,11 @@ fun ObservatoryDashboard(
             Button(
               onClick = { onNavigate(ReconDestination.ORBITAL_GLOBE) },
               colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xCC17202D),
+                containerColor = ObservatorySurfaceContainerHigh.copy(alpha = 0.92f),
                 contentColor = AmberPrimary
               ),
               border = androidx.compose.foundation.BorderStroke(1.dp, AmberPrimary),
-              shape = RoundedCornerShape(6.dp),
+              shape = RoundedCornerShape(8.dp),
               modifier = Modifier.testTag("launch_full_globe_button")
             ) {
               Icon(
@@ -400,9 +390,10 @@ fun ObservatoryDashboard(
               )
               Spacer(modifier = Modifier.width(6.dp))
               Text(
-                text = "OPEN 3D GLOBE",
+                text = "EXPAND 3D GLOBE",
                 style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
               )
             }
           }
@@ -411,7 +402,7 @@ fun ObservatoryDashboard(
 
       Spacer(modifier = Modifier.height(20.dp))
 
-      // Section: Tactical Operations
+      // Section: Tactical Operations Grid with Spring Physics
       Text(
         text = "TACTICAL OPERATIONS // QUICK ACCESS",
         style = MaterialTheme.typography.labelSmall,
@@ -431,7 +422,7 @@ fun ObservatoryDashboard(
           OperationCard(
             modifier = Modifier.weight(1f),
             title = "3D ORBITAL GLOBE",
-            description = "Interactive 3D Earth projection with sensor angles and world node pins.",
+            description = "Interactive 3D Earth projection with pitch/yaw drag rotation and telemetry nodes.",
             icon = Icons.Default.Public,
             accentColor = AmberPrimary,
             tag = "op_card_globe",
@@ -510,7 +501,7 @@ fun ObservatoryDashboard(
                   shape = RoundedCornerShape(10.dp),
                   border = androidx.compose.foundation.BorderStroke(1.dp, BorderAmber),
                   modifier = Modifier
-                    .width(180.dp)
+                    .width(185.dp)
                     .clickable { onNavigate(ReconDestination.DOSSIER_WATCHLIST) }
                 ) {
                   Column(modifier = Modifier.padding(12.dp)) {
@@ -522,7 +513,7 @@ fun ObservatoryDashboard(
                           modifier = Modifier
                             .size(34.dp)
                             .clip(CircleShape)
-                            .border(1.dp, AmberPrimary, CircleShape),
+                            .border(1.2.dp, AmberPrimary, CircleShape),
                           contentScale = ContentScale.Crop
                         )
                       } else {
@@ -531,7 +522,7 @@ fun ObservatoryDashboard(
                             .size(34.dp)
                             .clip(CircleShape)
                             .background(ObservatorySurfaceVariant)
-                            .border(1.dp, AmberPrimary, CircleShape),
+                            .border(1.2.dp, AmberPrimary, CircleShape),
                           contentAlignment = Alignment.Center
                         ) {
                           Text(
@@ -613,7 +604,7 @@ fun ObservatoryDashboard(
                   ),
                   shape = RoundedCornerShape(6.dp)
                 ) {
-                  Text("Scan", fontSize = 11.sp)
+                  Text("Scan", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
               }
             }
@@ -676,13 +667,34 @@ private fun TelemetryCard(
   color: Color,
   onClick: () -> Unit
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
+  val isPressed by interactionSource.collectIsPressedAsState()
+  val scale by animateFloatAsState(
+    targetValue = if (isPressed) 0.96f else 1f,
+    animationSpec = spring(
+      dampingRatio = Spring.DampingRatioMediumBouncy,
+      stiffness = Spring.StiffnessLow
+    ),
+    label = "TelemetryCardScale"
+  )
+
   Surface(
     color = ObservatorySurfaceContainer,
-    shape = RoundedCornerShape(10.dp),
-    border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.4f)),
-    modifier = modifier.clickable { onClick() }
+    shape = RoundedCornerShape(12.dp),
+    border = androidx.compose.foundation.BorderStroke(1.2.dp, color.copy(alpha = 0.45f)),
+    modifier = modifier
+      .scale(scale)
+      .clickable(interactionSource = interactionSource, indication = null) { onClick() }
+      .drawBehind {
+        drawCircle(
+          brush = Brush.radialGradient(
+            colors = listOf(color.copy(alpha = 0.12f), Color.Transparent),
+            radius = size.width * 0.7f
+          )
+        )
+      }
   ) {
-    Column(modifier = Modifier.padding(12.dp)) {
+    Column(modifier = Modifier.padding(14.dp)) {
       Text(
         text = title,
         style = MaterialTheme.typography.labelSmall,
@@ -720,28 +732,48 @@ private fun OperationCard(
   tag: String,
   onClick: () -> Unit
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
+  val isPressed by interactionSource.collectIsPressedAsState()
+  val scale by animateFloatAsState(
+    targetValue = if (isPressed) 0.96f else 1f,
+    animationSpec = spring(
+      dampingRatio = Spring.DampingRatioMediumBouncy,
+      stiffness = Spring.StiffnessLow
+    ),
+    label = "OperationCardScale"
+  )
+
   Surface(
     color = ObservatorySurfaceContainer,
-    shape = RoundedCornerShape(10.dp),
-    border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.35f)),
+    shape = RoundedCornerShape(12.dp),
+    border = androidx.compose.foundation.BorderStroke(1.2.dp, accentColor.copy(alpha = 0.4f)),
     modifier = modifier
-      .clickable { onClick() }
+      .scale(scale)
+      .clickable(interactionSource = interactionSource, indication = null) { onClick() }
       .testTag(tag)
+      .drawBehind {
+        drawCircle(
+          brush = Brush.radialGradient(
+            colors = listOf(accentColor.copy(alpha = 0.10f), Color.Transparent),
+            radius = size.width * 0.75f
+          )
+        )
+      }
   ) {
-    Column(modifier = Modifier.padding(12.dp)) {
+    Column(modifier = Modifier.padding(14.dp)) {
       Box(
         modifier = Modifier
-          .size(34.dp)
-          .clip(RoundedCornerShape(6.dp))
+          .size(36.dp)
+          .clip(RoundedCornerShape(8.dp))
           .background(accentColor.copy(alpha = 0.15f))
-          .border(1.dp, accentColor.copy(alpha = 0.4f), RoundedCornerShape(6.dp)),
+          .border(1.dp, accentColor.copy(alpha = 0.45f), RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
       ) {
         Icon(
           imageVector = icon,
           contentDescription = null,
           tint = accentColor,
-          modifier = Modifier.size(18.dp)
+          modifier = Modifier.size(19.dp)
         )
       }
 
@@ -752,7 +784,8 @@ private fun OperationCard(
         style = MaterialTheme.typography.labelMedium,
         color = TextPrimary,
         fontWeight = FontWeight.Bold,
-        fontSize = 11.sp
+        fontSize = 12.sp,
+        fontFamily = FontFamily.Monospace
       )
 
       Spacer(modifier = Modifier.height(4.dp))
@@ -762,11 +795,11 @@ private fun OperationCard(
         style = MaterialTheme.typography.bodySmall,
         color = TextSecondary,
         fontSize = 10.sp,
-        lineHeight = 13.sp,
+        lineHeight = 14.sp,
         maxLines = 3
       )
 
-      Spacer(modifier = Modifier.height(8.dp))
+      Spacer(modifier = Modifier.height(10.dp))
 
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -777,13 +810,14 @@ private fun OperationCard(
           style = MaterialTheme.typography.labelSmall,
           color = accentColor,
           fontSize = 9.sp,
-          fontWeight = FontWeight.Bold
+          fontWeight = FontWeight.Bold,
+          fontFamily = FontFamily.Monospace
         )
         Icon(
           imageVector = Icons.Default.ArrowForward,
           contentDescription = null,
           tint = accentColor,
-          modifier = Modifier.size(10.dp)
+          modifier = Modifier.size(11.dp)
         )
       }
     }

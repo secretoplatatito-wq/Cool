@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.credentials.CredentialManager
 import com.example.ui.components.Globe3DCanvas
+import com.example.ui.components.ObservatoryHeader
 import com.example.ui.theme.AmberLight
 import com.example.ui.theme.AmberPrimary
 import com.example.ui.theme.BorderAmber
@@ -84,9 +85,24 @@ fun MainObservatoryScreen(
     ) {
       // Top Command Header
       ObservatoryHeader(
-        onSignOut = {
-          val credentialManager = CredentialManager.create(context)
-          signOutUser(context, credentialManager, coroutineScope, onSignOut)
+        title = "God's Eye",
+        subtitle = "SEC-LEVEL 4 // vE_0.0.1 [HARDENED]",
+        statusLabel = "ONLINE",
+        statusColor = AmberPrimary,
+        actions = {
+          IconButton(
+            onClick = {
+              val credentialManager = CredentialManager.create(context)
+              signOutUser(context, credentialManager, coroutineScope, onSignOut)
+            },
+            modifier = Modifier.testTag("sign_out_button")
+          ) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Filled.Logout,
+              contentDescription = "Sign Out",
+              tint = AmberLight
+            )
+          }
         }
       )
 
@@ -127,61 +143,6 @@ fun MainObservatoryScreen(
             AnalystChatScreen(viewModel = viewModel)
           }
         }
-      }
-    }
-  }
-}
-
-@Composable
-fun ObservatoryHeader(
-  onSignOut: () -> Unit
-) {
-  Surface(
-    color = ObsidianCard,
-    border = androidx.compose.foundation.BorderStroke(1.dp, BorderAmber),
-    modifier = Modifier.fillMaxWidth()
-  ) {
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 10.dp),
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-      Box(
-        modifier = Modifier
-          .size(10.dp)
-          .background(PhosphorGreen, CircleShape)
-          .border(1.dp, Color.White, CircleShape)
-      )
-
-      Spacer(modifier = Modifier.width(10.dp))
-
-      Column(modifier = Modifier.weight(1f)) {
-        Text(
-          text = "GOD'S EYE OBSERVATORY",
-          style = MaterialTheme.typography.titleMedium,
-          color = AmberPrimary,
-          fontSize = 15.sp,
-          fontWeight = FontWeight.Bold,
-          letterSpacing = 1.sp
-        )
-        Text(
-          text = "SEC-LEVEL 4 // vE_0.0.1 [HARDENED] // TELEMETRY ONLINE",
-          style = MaterialTheme.typography.labelSmall,
-          color = TacticalCyan,
-          fontSize = 9.sp
-        )
-      }
-
-      IconButton(
-        onClick = onSignOut,
-        modifier = Modifier.testTag("sign_out_button")
-      ) {
-        Icon(
-          imageVector = Icons.AutoMirrored.Filled.Logout,
-          contentDescription = "Sign Out",
-          tint = AmberLight
-        )
       }
     }
   }
