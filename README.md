@@ -1,3 +1,9 @@
+<!-- Centered logo with a custom width -->
+<p align="center">
+  <img src="https://ibb.co/84fKwJxr" alt="Project Logo" width="200">
+</p>
+
+
 # God's Eye Observatory 🛰️
 
 > Tactical Geospatial & Public Intelligence Dashboard for Android (vE_0.0.1)
