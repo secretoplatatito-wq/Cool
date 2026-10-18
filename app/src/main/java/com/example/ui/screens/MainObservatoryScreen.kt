@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.FolderSpecial
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Radar
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -137,6 +138,10 @@ fun MainObservatoryScreen(
             )
           }
 
+          ReconDestination.OSINT_SUITE -> {
+            OsintSuiteScreen(viewModel = viewModel)
+          }
+
           ReconDestination.DOSSIER_WATCHLIST -> {
             WatchlistScreen(viewModel = viewModel)
           }
@@ -223,20 +228,20 @@ fun ObservatoryBottomBar(
     )
 
     NavigationBarItem(
-      selected = currentDestination == ReconDestination.PUBLIC_RECON,
+      selected = currentDestination == ReconDestination.OSINT_SUITE || currentDestination == ReconDestination.PUBLIC_RECON,
       onClick = {
         TacticalHaptics.tick(haptic)
-        onNavigate(ReconDestination.PUBLIC_RECON)
+        onNavigate(ReconDestination.OSINT_SUITE)
       },
       icon = {
         Icon(
-          imageVector = Icons.Default.Radar,
-          contentDescription = "Recon HUD"
+          imageVector = Icons.Default.Security,
+          contentDescription = "OSINT Suite"
         )
       },
       label = {
         Text(
-          text = "RECON",
+          text = "OSINT",
           fontFamily = FontFamily.Monospace,
           fontSize = 10.sp
         )
@@ -248,7 +253,7 @@ fun ObservatoryBottomBar(
         unselectedIconColor = TextSecondary,
         unselectedTextColor = TextSecondary
       ),
-      modifier = Modifier.testTag("nav_recon")
+      modifier = Modifier.testTag("nav_osint")
     )
 
     NavigationBarItem(

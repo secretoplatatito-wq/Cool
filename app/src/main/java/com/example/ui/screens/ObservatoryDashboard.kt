@@ -32,7 +32,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.FolderSpecial
 import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.Psychology
@@ -78,12 +78,16 @@ import com.example.ui.theme.AmberPrimary
 import com.example.ui.theme.BorderAmber
 import com.example.ui.theme.BorderAmberStrong
 import com.example.ui.theme.BorderSubtle
+import com.example.ui.theme.AmberContainer
+import com.example.ui.theme.CoffeeCard
+import com.example.ui.theme.LinenWhite
 import com.example.ui.theme.ObservatorySurface
 import com.example.ui.theme.ObservatorySurfaceContainer
 import com.example.ui.theme.ObservatorySurfaceContainerHigh
 import com.example.ui.theme.ObservatorySurfaceVariant
 import com.example.ui.theme.ObservatoryVoid
 import com.example.ui.theme.PhosphorGreen
+import com.example.ui.theme.StatusSage
 import com.example.ui.theme.TacticalCyan
 import com.example.ui.theme.TacticalHaptics
 import com.example.ui.theme.TextMuted
@@ -445,6 +449,80 @@ fun ObservatoryDashboard(
           letterSpacing = 1.sp,
           fontFamily = FontFamily.Monospace
         )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Unseen.co Inspired Feature Card: Unified OSINT Intelligence Engine
+        Surface(
+          color = CoffeeCard,
+          shape = RoundedCornerShape(12.dp),
+          border = androidx.compose.foundation.BorderStroke(1.dp, BorderAmberStrong),
+          modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+              TacticalHaptics.lock(haptic)
+              onNavigate(ReconDestination.OSINT_SUITE)
+            }
+            .testTag("op_card_osint_suite")
+        ) {
+          Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+          ) {
+            Box(
+              modifier = Modifier
+                .size(44.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(AmberContainer)
+                .border(1.dp, AmberPrimary, RoundedCornerShape(10.dp)),
+              contentAlignment = Alignment.Center
+            ) {
+              Icon(
+                imageVector = Icons.Default.Security,
+                contentDescription = null,
+                tint = AmberPrimary,
+                modifier = Modifier.size(24.dp)
+              )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+              Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+              ) {
+                Text(
+                  text = "01 // OSINT INTELLIGENCE SUITE",
+                  style = MaterialTheme.typography.labelSmall,
+                  color = AmberLight,
+                  fontWeight = FontWeight.Bold,
+                  fontSize = 11.sp,
+                  fontFamily = FontFamily.Monospace
+                )
+                Text(
+                  text = "4 ENGINES",
+                  color = StatusSage,
+                  fontSize = 8.sp,
+                  fontWeight = FontWeight.Bold,
+                  fontFamily = FontFamily.Monospace
+                )
+              }
+              Spacer(modifier = Modifier.height(2.dp))
+              Text(
+                text = "Sherlock, Blackbird, PhoneInfoga, Holehe, SpiderFoot & Photon multi-vector reconnaissance.",
+                style = MaterialTheme.typography.bodySmall,
+                color = LinenWhite,
+                fontSize = 10.sp,
+                lineHeight = 14.sp
+              )
+            }
+            Icon(
+              imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+              contentDescription = "Open OSINT Suite",
+              tint = AmberPrimary,
+              modifier = Modifier.size(16.dp)
+            )
+          }
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -877,7 +955,7 @@ private fun OperationCard(
           fontFamily = FontFamily.Monospace
         )
         Icon(
-          imageVector = Icons.Default.ArrowForward,
+          imageVector = Icons.AutoMirrored.Filled.ArrowForward,
           contentDescription = null,
           tint = accentColor,
           modifier = Modifier.size(11.dp)

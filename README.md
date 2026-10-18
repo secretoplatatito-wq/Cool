@@ -12,29 +12,38 @@ God's Eye Observatory unites an interactive 3D tactical vector globe, real-time 
 
 ---
 
-## 🎨 Theme: Observatory Palette
-Designed with Material 3 in a high-contrast cosmic observatory aesthetic:
-- **Cosmic Void**: Deep space obsidian `#06090E` and hull slate `#0B1017`
-- **Vibrant Amber Accents**: High-intensity HUD laser amber `#FFB300` and phosphor gold `#FFD54F`
-- **Tactical Sensor Overlays**: Cyberpunk cyan `#00E5FF` and active telemetry green `#00E676`
+## 🎨 Aesthetic: Unseen.co Refined Luxury & Tactical Minimalism
+Inspired by the digital craftsmanship and quiet luxury of **unseen.co**:
+- **Palette**: Velvet espresso void (`#140F0D`), rich roasted coffee cards (`#2E2420`), luminous creamy ivory (`#FBF8F3`), and metallic champagne gold (`#D4AF37`)
+- **Celestial Starfield**: Interactive canvas backdrop with touch-responsive gravitational drift and ambient micro-glows
+- **Haptic Tactility**: Precise vibration feedback on target lock, probe executions, and tactical navigation
+- **Fine Details**: Hairline gold borders (`BorderGold`), monospace telemetry coordinates, and glassmorphic depth
 
 ---
 
-## ⚡ Features
-1. **Interactive 3D Tactical Globe**:
-   - Hardware-accelerated 3D spherical projection with pitch/yaw drag rotation.
-   - Real-time orbital rings with rotating recon satellite beacon.
-   - Global observation nodes (Tokyo, London, New York, San Francisco, Singapore, Sydney, Dubai, Berlin, São Paulo, Seoul) with coordinate telemetry.
-2. **Multi-Platform Public Recon (Recon HUD)**:
-   - Universal search and public metric tracking across **YouTube**, **Roblox**, **GitHub**, **TikTok**, **Twitch**, and **Kick**.
-   - Curated 1-tap presets (*MrBeast*, *builderman*, *Linus Torvalds*, *xQc*, *Khaby Lame*).
-3. **Cloud Dossier & Watchlist (Firebase Firestore)**:
-   - Scoped user isolation under `/users/{uid}/targets/{targetId}`.
-   - Zero-trust security rules mathematically tested against injection and cross-user leaks.
-   - Custom observation logs and milestone notes.
-4. **AI Tactical Analyst (Gemini Intelligence)**:
-   - Powered by `gemini-3.8-flash` with Google Search Grounding for live facts.
-   - Deep reasoning mode powered by `gemini-4-argon` with high-thinking level.
+## ⚡ Unified Intelligence & OSINT Engines
+God's Eye unites open-source intelligence frameworks into one cohesive, zero-trust mobile command suite:
+
+1. **Sherlock & Blackbird (Username Intelligence)**:
+   - Automated account reconnaissance across 18+ high-priority developer and social networks: GitHub, Reddit, Twitter/X, Instagram, YouTube, Roblox, TikTok, Steam, Telegram, Spotify, Dev.to, Replit, and Kick.
+   - Verified endpoint detection with 1-tap Dossier saving.
+2. **PhoneInfoga (Telephony Reconnaissance)**:
+   - E.164 international phone number normalization and carrier routing detection.
+   - Automatic Google Dork generation for public paste dumps, directories, and social footprints.
+3. **Holehe (Email Footprint & Gravatar)**:
+   - Account presence reconnaissance across global platforms without alerting targets.
+   - MD5 hash computation and Gravatar profile avatar extraction.
+4. **Photon & SpiderFoot (Domain, Subdomains & Cloud Storage)**:
+   - Cloud storage bucket discovery across AWS S3, Google Cloud Storage, and Azure Blob.
+   - DNS subdomain scanning (api, dev, admin, staging, mail, cdn) and HTTP security header evaluation.
+5. **Interactive 3D Tactical Globe**:
+   - Hardware-accelerated 3D spherical projection with pitch/yaw drag rotation and global observation nodes.
+6. **Creator Recon HUD**:
+   - Live public creator and streamer lookup across YouTube, Roblox, GitHub, TikTok, Twitch, and Kick.
+7. **Cloud Dossier & Watchlist (Firebase Firestore)**:
+   - Scoped user isolation under `/users/{uid}/targets/{targetId}` with verified zero-trust rules.
+8. **AI Tactical Analyst (Gemini Intelligence)**:
+   - Powered by `gemini-3.8-flash` with Google Search Grounding for real-time facts and verification.
 
 ---
 

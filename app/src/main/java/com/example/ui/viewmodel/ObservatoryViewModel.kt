@@ -5,7 +5,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.model.ObservedTarget
 import com.example.data.network.GeminiClient
+import com.example.data.repository.DomainIntelResult
+import com.example.data.repository.EmailIntelResult
 import com.example.data.repository.FirestoreRepository
+import com.example.data.repository.OsintAccountResult
+import com.example.data.repository.OsintEngineRepository
+import com.example.data.repository.PhoneIntelResult
 import com.example.data.repository.PublicPlatformRepository
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -22,6 +27,7 @@ enum class ReconDestination {
   DASHBOARD,
   ORBITAL_GLOBE,
   PUBLIC_RECON,
+  OSINT_SUITE,
   DOSSIER_WATCHLIST,
   ANALYST_AI
 }
@@ -188,6 +194,65 @@ class ObservatoryViewModel(application: Application) : AndroidViewModel(applicat
 
       _messages.value = _messages.value + modelMessage
       _isAnalystThinking.value = false
+    }
+  }
+
+  // OSINT Engine Suites (Sherlock, Blackbird, PhoneInfoga, Holehe, SpiderFoot)
+  private val osintRepository = OsintEngineRepository()
+
+  private val _usernameHuntState = MutableStateFlow<UiState<List<OsintAccountResult>>?>(null)
+  val usernameHuntState: StateFlow<UiState<List<OsintAccountResult>>?> = _usernameHuntState.asStateFlow()
+
+  fun runUsernameHunt(username: String) {
+    if (username.isBlank()) return
+    viewModelScope.launch {
+      _usernameHuntState.value = UiState.Loading
+      try {
+        val results = osintRepository.huntUsername(username)
+        _usernameHuntState.value = UiState.Success(results)
+      } catch (e: Exception) {
+        _usernameHuntState.value = UiState.Error(e.message ?: "Failed to probe accounts")
+      }
+    }
+  }
+
+  private val _phoneIntelState = MutableStateFlow<PhoneIntelResult?>(null)
+  val phoneIntelState: StateFlow<PhoneIntelResult?> = _phoneIntelState.asStateFlow()
+
+  fun runPhoneIntel(phone: String) {
+    if (phone.isBlank()) return
+    _phoneIntelState.value = osintRepository.analyzePhoneNumber(phone)
+  }
+
+  private val _emailIntelState = MutableStateFlow<UiState<EmailIntelResult>?>(null)
+  val emailIntelState: StateFlow<UiState<EmailIntelResult>?> = _emailIntelState.asStateFlow()
+
+  fun runEmailIntel(email: String) {
+    if (email.isBlank()) return
+    viewModelScope.launch {
+      _emailIntelState.value = UiState.Loading
+      try {
+        val result = osintRepository.analyzeEmail(email)
+        _emailIntelState.value = UiState.Success(result)
+      } catch (e: Exception) {
+        _emailIntelState.value = UiState.Error(e.message ?: "Email analysis failed")
+      }
+    }
+  }
+
+  private val _domainIntelState = MutableStateFlow<UiState<DomainIntelResult>?>(null)
+  val domainIntelState: StateFlow<UiState<DomainIntelResult>?> = _domainIntelState.asStateFlow()
+
+  fun runDomainIntel(domain: String) {
+    if (domain.isBlank()) return
+    viewModelScope.launch {
+      _domainIntelState.value = UiState.Loading
+      try {
+        val result = osintRepository.analyzeDomain(domain)
+        _domainIntelState.value = UiState.Success(result)
+      } catch (e: Exception) {
+        _domainIntelState.value = UiState.Error(e.message ?: "Domain scan failed")
+      }
     }
   }
 }

@@ -36,7 +36,15 @@ jobs:
 
       - name: Accept Android SDK Licenses
         run: |
-          yes | sdkmanager --licenses 2>/dev/null || true
+          mkdir -p "$ANDROID_HOME/licenses" || true
+          printf "\n24333f8a63b6825ea9c5514f83c2829b004d1fee\nd56f5187479451eabf01fb78af6dfcb131a6481e\n84831b9409646a2a3e04447a3249e6b40478dc92\n" >> "$ANDROID_HOME/licenses/android-sdk-license"
+          printf "\n859f31038342e3973ece4091922822925ada60ff\n" >> "$ANDROID_HOME/licenses/android-sdk-preview-license"
+          printf "\nd9754651136ca4c505e991476baeed2a194b4944\n" >> "$ANDROID_HOME/licenses/intel-android-extra-license"
+          if command -v sdkmanager >/dev/null 2>&1; then
+            yes | sdkmanager --licenses 2>/dev/null || true
+          elif [ -f "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses 2>/dev/null || true
+          fi
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -88,6 +96,7 @@ jobs:
         with:
           name: "God's Eye Observatory Release ${{ steps.apk-location.outputs.tag_name }}"
           tag_name: ${{ steps.apk-location.outputs.tag_name }}
+          target_commitish: ${{ github.sha }}
           draft: false
           prerelease: false
           generate_release_notes: true
